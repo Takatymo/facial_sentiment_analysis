@@ -7,6 +7,21 @@ This is a sentiment classification of facial images with CNN.
 * OSX
 * Anaconda
 
+## Usage
+
+```
+python application.py
+...
+
+ Enter img path:<your img path>
+
+angry probability：0.14503729343414307
+fear probability：3.6702323995996267e-05
+happy probability：0.8073715567588806
+normal probability：0.00019879518367815763
+sad probability：0.04735567793250084
+```
+
 ## Install
 
 Install OpenCV, Anaconda.
