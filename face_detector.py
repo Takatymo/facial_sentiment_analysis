@@ -19,3 +19,14 @@ def detect_faces(image_pass):
 
     else:
         return []
+
+def show_detection_result(img_BGR, facerect):
+    img_copy = img_BGR.copy() #to prevent update original image
+    color = (255, 255, 255) #white
+
+    for (x, y, w, h) in facerect:
+        cv2.rectangle(img_copy, (x,y),(x+w, y+h), color, thickness=2)
+
+    cv2.imshow('result', img_copy)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
