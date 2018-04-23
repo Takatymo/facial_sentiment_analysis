@@ -21,6 +21,7 @@ class SentimentClassifier(object):
 
     def __init__(self, img_size=IMG_SIZE, nb_classes=NB_CLASSES):
         self.img_size = img_size
+        self.class_labels = ('angry', 'fear', 'happy', 'normal', 'sad')
 
         resnet = ResNet50(include_top=False,
                           input_shape=(img_size, img_size, 3),
@@ -54,26 +55,31 @@ class SentimentClassifier(object):
                                 steps_per_epoch=155,
                                 epochs=4,
                                 validation_data=validation_generator,
-                                validation_steps=200)
+                                validation_steps=50)
 
     def predict(self, img_path):
         face_imgs = detect_faces(img_path)
-        face_img = face_imgs[0]
 
-        cv2.imshow('face', face_img)
+        if len(face_imgs) != 1:
+            print('Detect no faces.')
+            return None
+
+        face_img = face_imgs[0]
 
         #convert OpenCV to PIL format
         face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
         face_img = Image.fromarray(face_img)
 
+        #resize face image to model input size
         face_img = face_img.resize((self.img_size, self.img_size))
 
         x = img_to_array(face_img)
-        x = np.expand_dims(x, axis=0)
+        x = np.expand_dims(x, axis=0) #
 
         result = self.model.predict(x)
+        zip_label_prob = zip(self.class_labels, result.tolist()[0])
 
-        return result
+        return [{'label':label, 'prob':prob} for label, prob in zip_label_prob]
 
     def load(self, model_path=MODEL_PATH):
         print('Model Loaded.')
@@ -82,18 +88,3 @@ class SentimentClassifier(object):
     def save(self, model_path=MODEL_PATH):
         print('Model Saved.')
         self.model.save(model_path)
-
-
-if __name__ == '__main__':
-
-    model = SentimentClassifier()
-
-    #model.train()
-    #model.save()
-
-    model.load()
-
-    while(True):
-        img_path = input('Enter img path:')
-        result_class = model.predict(img_path)
-        print(result_class)
